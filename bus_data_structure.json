@@ -1,0 +1,10 @@
+{
+  "device_id": "SHUTTLE_01",
+  "route_id": 5,
+  "location": {
+    "lat": -33.9587,
+    "lng": 18.4612
+  },
+  "speed": "35km/h",
+  "timestamp": "2026-08-19T14:30:00Z"
+}
