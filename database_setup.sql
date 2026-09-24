@@ -1,17 +1,87 @@
--- Creating the core Bus table based on Term 2 design
-CREATE TABLE buses (
-    id INT PRIMARY KEY,
-    registration_number VARCHAR(20) UNIQUE,
-    capacity INT,
-    bus_type VARCHAR(50),
-    is_active BOOLEAN DEFAULT TRUE
+CREATE TABLE User (
+    UserID INT PRIMARY KEY AUTO_INCREMENT,
+    FullName VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Password VARCHAR(255) NOT NULL,
+    PhoneNumber VARCHAR(15),
+    Role VARCHAR(20) NOT NULL
 );
 
--- Creating the Live Tracking table
-CREATE TABLE bus_positions (
-    id INT PRIMARY KEY,
-    bus_id INT REFERENCES buses(id),
-    latitude DOUBLE PRECISION,
-    longitude DOUBLE PRECISION,
-    reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+CREATE TABLE Driver (
+    DriverID INT PRIMARY KEY AUTO_INCREMENT,
+    FullName VARCHAR(100) NOT NULL,
+    PhoneNumber VARCHAR(15),
+    UserID INT,
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+);
+
+CREATE TABLE Admin (
+    AdminID INT PRIMARY KEY AUTO_INCREMENT,
+    FullName VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    UserID INT,
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+);
+
+
+CREATE TABLE Route (
+    RouteID INT PRIMARY KEY AUTO_INCREMENT,
+    RouteName VARCHAR(100) NOT NULL,
+    StartLocation VARCHAR(100) NOT NULL,
+    Destination VARCHAR(100) NOT NULL
+);
+
+
+CREATE TABLE Bus (
+    BusID INT PRIMARY KEY AUTO_INCREMENT,
+    BusNumber VARCHAR(20) NOT NULL,
+    Capacity INT NOT NULL,
+    CurrentLocation VARCHAR(150),
+    ActiveStatus VARCHAR(20) DEFAULT 'Active',
+    RouteID INT,
+    DriverID INT,
+    FOREIGN KEY (RouteID) REFERENCES Route(RouteID),
+    FOREIGN KEY (DriverID) REFERENCES Driver(DriverID)
+);
+
+
+CREATE TABLE Bus_Stop (
+    StopID INT PRIMARY KEY AUTO_INCREMENT,
+    StopName VARCHAR(100) NOT NULL,
+    Location VARCHAR(150),
+    RouteID INT,
+    FOREIGN KEY (RouteID) REFERENCES Route(RouteID)
+);
+
+
+CREATE TABLE Schedule (
+    ScheduleID INT PRIMARY KEY AUTO_INCREMENT,
+    BusID INT,
+    RouteID INT,
+    DepartureTime TIME NOT NULL,
+    ArrivalTime TIME NOT NULL,
+    Date DATE NOT NULL,
+    FOREIGN KEY (BusID) REFERENCES Bus(BusID),
+    FOREIGN KEY (RouteID) REFERENCES Route(RouteID)
+);
+
+
+CREATE TABLE Notification (
+    NotificationID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT,
+    Message VARCHAR(255) NOT NULL,
+    DateSent DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Status VARCHAR(20) DEFAULT 'Unread',
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+);
+
+
+CREATE TABLE Favourite_Stop (
+    FavouriteID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID INT,
+    StopID INT,
+    DateAdded DATE DEFAULT (CURRENT_DATE),
+    FOREIGN KEY (UserID) REFERENCES User(UserID),
+    FOREIGN KEY (StopID) REFERENCES Bus_Stop(StopID)
 );
